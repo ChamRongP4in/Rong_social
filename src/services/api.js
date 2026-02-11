@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost/instagram_social/backend/api';
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  'https://rong-k-boy-zin.lovestoblog.com/backend/api';
 
 export default {
   // ==========================================
