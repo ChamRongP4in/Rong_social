@@ -3,16 +3,9 @@ import axios from 'axios';
 const API_URL = 'https://pinktagram-backend.onrender.com/backend/api';
 
 export default {
-  // ==========================================
   // AUTHENTICATION
-  // ==========================================
-
-  // FIXED: Action should be in query parameter, not body
   login: (username, password) =>
-    axios.post(`${API_URL}/auth.php?action=login`, {
-      username,
-      password,
-    }),
+    axios.post(`${API_URL}/auth.php?action=login`, { username, password }),
 
   register: (username, email, password, full_name) =>
     axios.post(`${API_URL}/auth.php?action=register`, {
@@ -22,10 +15,7 @@ export default {
       full_name,
     }),
 
-  // ==========================================
   // USER MANAGEMENT
-  // ==========================================
-
   getUserById: (userId, currentUserId) =>
     axios.get(
       `${API_URL}/user.php?user_id=${userId}${currentUserId ? `&current_user_id=${currentUserId}` : ''}`,
@@ -41,10 +31,7 @@ export default {
 
   updateProfile: (data) => axios.put(`${API_URL}/user.php`, data),
 
-  // ==========================================
   // POSTS
-  // ==========================================
-
   getPosts: (userId) =>
     axios.get(`${API_URL}/posts.php${userId ? `?user_id=${userId}` : ''}`),
 
@@ -59,13 +46,10 @@ export default {
     axios.put(`${API_URL}/posts.php`, {
       post_id: postId,
       user_id: userId,
-      caption: caption,
+      caption,
     }),
 
-  // ==========================================
   // SAVED POSTS
-  // ==========================================
-
   getSavedPosts: (userId) =>
     axios.get(`${API_URL}/saved_posts.php?user_id=${userId}`),
 
@@ -83,18 +67,11 @@ export default {
   getLikedPosts: (userId) =>
     axios.get(`${API_URL}/likes.php?user_id=${userId}`),
 
-  // ==========================================
   // STORIES
-  // ==========================================
-
   getStories: () => axios.get(`${API_URL}/stories.php`),
-
   createStory: (data) => axios.post(`${API_URL}/stories.php`, data),
 
-  // ==========================================
   // LIKES
-  // ==========================================
-
   likePost: (userId, postId) =>
     axios.post(`${API_URL}/likes.php`, { user_id: userId, post_id: postId }),
 
@@ -103,10 +80,7 @@ export default {
       data: { user_id: userId, post_id: postId },
     }),
 
-  // ==========================================
   // COMMENTS
-  // ==========================================
-
   getComments: (postId) =>
     axios.get(`${API_URL}/comments.php?post_id=${postId}`),
 
@@ -117,48 +91,22 @@ export default {
       data: { comment_id: commentId, user_id: userId },
     }),
 
-  // ==========================================
   // FILE UPLOAD
-  // ==========================================
-
   uploadFile: async (file) => {
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      console.log(
-        'Uploading file:',
-        file.name,
-        'Size:',
-        file.size,
-        'Type:',
-        file.type,
-      );
-
-      const response = await axios.post(`${API_URL}/upload.php`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total,
-          );
-          console.log('Upload progress:', percentCompleted + '%');
-        },
-      });
-
-      console.log('Upload response:', response.data);
-      return response;
-    } catch (error) {
-      console.error('Upload error:', error.response?.data || error.message);
-      throw error;
-    }
+    const formData = new FormData();
+    formData.append('file', file);
+    return axios.post(`${API_URL}/upload.php`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (e) => {
+        console.log(
+          'Upload progress:',
+          Math.round((e.loaded * 100) / e.total) + '%',
+        );
+      },
+    });
   },
 
-  // ==========================================
-  // FOLLOW SYSTEM
-  // ==========================================
-
+  // FOLLOW
   followUser: (followerId, followingId) =>
     axios.post(`${API_URL}/follow.php`, {
       follower_id: followerId,
@@ -180,19 +128,13 @@ export default {
       `${API_URL}/follow.php?user_id=${userId}&type=following${currentUserId ? `&current_user_id=${currentUserId}` : ''}`,
     ),
 
-  // ==========================================
   // SEARCH
-  // ==========================================
-
   searchUsers: (query, currentUserId) =>
     axios.get(
       `${API_URL}/search.php?q=${encodeURIComponent(query)}${currentUserId ? `&current_user_id=${currentUserId}` : ''}`,
     ),
 
-  // ==========================================
-  // CHAT SYSTEM
-  // ==========================================
-
+  // MESSAGES
   getConversations: (userId) =>
     axios.get(`${API_URL}/conversations.php?user_id=${userId}`),
 
@@ -210,7 +152,7 @@ export default {
       conversation_id: conversationId,
       sender_id: senderId,
       receiver_id: receiverId,
-      message: message,
+      message,
     }),
 
   markMessagesAsRead: (conversationId, userId) =>
@@ -218,4 +160,25 @@ export default {
       conversation_id: conversationId,
       user_id: userId,
     }),
+
+  getUnreadCount: (userId) =>
+    axios.get(`${API_URL}/messages.php?action=unread_count&user_id=${userId}`),
+
+  // STORY REACTIONS
+  likeStory: (userId, storyId) =>
+    axios.post(`${API_URL}/story_reactions.php`, {
+      user_id: userId,
+      story_id: storyId,
+      action: 'like',
+    }),
+
+  unlikeStory: (userId, storyId) =>
+    axios.delete(`${API_URL}/story_reactions.php`, {
+      data: { user_id: userId, story_id: storyId },
+    }),
+
+  commentOnStory: (data) => axios.post(`${API_URL}/story_comments.php`, data),
+
+  getStoryComments: (storyId) =>
+    axios.get(`${API_URL}/story_comments.php?story_id=${storyId}`),
 };
