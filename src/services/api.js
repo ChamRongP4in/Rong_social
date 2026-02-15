@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://rong-k-boy-zin.lovestoblog.com/backend/api';
+const API_URL = 'https://pinktagram-backend.onrender.com/backend/api';
 
 export default {
   // ==========================================
