@@ -97,12 +97,6 @@ export default {
     formData.append('file', file);
     return axios.post(`${API_URL}/upload.php`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
-      onUploadProgress: (e) => {
-        console.log(
-          'Upload progress:',
-          Math.round((e.loaded * 100) / e.total) + '%',
-        );
-      },
     });
   },
 
